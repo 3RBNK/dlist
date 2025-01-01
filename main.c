@@ -40,8 +40,9 @@ short EmptyDList(DList DL);
 void MovePtrL(DList *DL);
 void MovePtrR(DList *DL);
 
-void PtrEnd(DList *DL);
 void PtrBegin(DList *DL);
+void PtrEnd(DList *DL);
+
 
 
 // реализация
@@ -62,7 +63,7 @@ void PutPred(DList *DL, BaseType E) {
     new_element->data = E;
 
     if (EmptyDList(*DL)) {
-        new_element->Llink = DL;
+        new_element->Llink = NULL;
         new_element->Rlink = NULL;
         DL->L = new_element;
         DL->ptr = new_element;
@@ -70,7 +71,7 @@ void PutPred(DList *DL, BaseType E) {
     } else {
         if (DL->ptr == DL->L) {
             new_element->Rlink = DL->ptr;
-            new_element->Llink = DL;
+            new_element->Llink = NULL;
             DL->ptr->Llink = new_element;
             DL->R = new_element;
         } else {
@@ -95,7 +96,7 @@ void PutPost(DList *DL, BaseType E) {
     new_element->data = E;
 
     if (EmptyDList(*DL)) {
-        new_element->Llink = DL;
+        new_element->Llink = NULL;
         new_element->Rlink = NULL;
         DL->L = new_element;
         DL->ptr = new_element;
@@ -121,18 +122,16 @@ void PutPost(DList *DL, BaseType E) {
 void GetPred(DList *DL, BaseType *E) {
     if (!EmptyDList(*DL)) {
         if (DL->L == DL->ptr) {
-            *E = DL->ptr->data;
-            free(DL->ptr);
-            DL->L = NULL;
-            DL->ptr = NULL;
-            DL->R = NULL;
-        } else {
-            *E = DL->ptr->Llink->data;
-            elptr temp = DL->ptr->Llink;
-            DL->ptr->Llink->Llink->Rlink = DL->ptr;
-            DL->ptr->Llink = DL->ptr->Llink->Llink;
-            free(temp);
+            DListError = DListPtrB;
+            return;
         }
+
+        *E = DL->ptr->Llink->data;
+        elptr temp = DL->ptr->Llink;
+        DL->ptr->Llink->Llink->Rlink = DL->ptr;
+        DL->ptr->Llink = DL->ptr->Llink->Llink;
+        free(temp);
+
         DListError = DListOk;
     } else {
         DListError = DListEmpty;
@@ -143,18 +142,17 @@ void GetPred(DList *DL, BaseType *E) {
 void GetPost(DList *DL, BaseType *E) {
     if (!EmptyDList(*DL)) {
         if (DL->L == DL->ptr) {
-            *E = DL->ptr->data;
-            free(DL->ptr);
-            DL->L = NULL;
-            DL->ptr = NULL;
-            DL->R = NULL;
-        } else {
-            *E = DL->ptr->Rlink->data;
-            elptr temp = DL->ptr->Rlink;
-            DL->ptr->Rlink->Rlink->Llink = DL->ptr;
-            DL->ptr->Rlink = DL->ptr->Rlink->Rlink;
-            free(temp);
+            DListError = DListPtrE;
+            return;
         }
+
+        *E = DL->ptr->Rlink->data;
+        elptr temp = DL->ptr->Rlink;
+        DL->ptr->Rlink->Rlink->Llink = DL->ptr;
+        DL->ptr->Rlink = DL->ptr->Rlink->Rlink;
+        free(temp);
+
+        DListError = DListOk;
     } else {
         DListError = DListEmpty;
     }
@@ -171,7 +169,43 @@ void DoneDList(DList *DL) {
 }
 
 
-short EmptyDList(DList DL);
+short EmptyDList(DList DL) {
+    return DL.L == NULL;
+}
+
+
+void MovePtrL(DList *DL) {
+    if (DL->ptr->Llink != NULL) {
+        DL->ptr = DL->ptr->Llink;
+        DListError = DListOk;
+    } else {
+        DListError = DListPtrB;
+    }
+}
+
+
+void MovePtrR(DList *DL) {
+    if (DL->ptr->Rlink != NULL) {
+        DL->ptr = DL->ptr->Rlink;
+        DListError = DListOk;
+    } else {
+        DListError = DListPtrE;
+    }
+}
+
+
+void PtrBegin(DList *DL) {
+    while (DL->ptr != DL->R)
+        MovePtrL(DL);
+    DListError = DListOk;
+}
+
+
+void PtrEnd(DList *DL) {
+    while (DL->ptr != DL->L)
+        MovePtrR(DL);
+    DListError = DListOk;
+}
 
 
 
