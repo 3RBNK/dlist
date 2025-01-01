@@ -1,0 +1,3 @@
+/home/bnkr/CLionProjects/asd_dz/dols/cmake-build-debug/CMakeFiles/dols.dir
+/home/bnkr/CLionProjects/asd_dz/dols/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/bnkr/CLionProjects/asd_dz/dols/cmake-build-debug/CMakeFiles/rebuild_cache.dir
